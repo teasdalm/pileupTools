@@ -1,4 +1,4 @@
-#! /usr/bin/bash 
+#! /bin/sh
 
 # bim2table.sh
 # Script to convert bim to interval_list file
