@@ -21,6 +21,10 @@ def tri_check(ref_base, called_base, snp_name):
         print "Possible Tri allele: {}".format(snp_name)
 
 
+def trans_only(line_dict):
+    pass
+
+
 def find_max_base(alleles):
     allele_counts = Counter(alleles).most_common()
     max_alleles = []
