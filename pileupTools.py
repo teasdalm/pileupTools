@@ -54,15 +54,15 @@ def check_bases(line_dict, base_qual_cutoff):
     return line_dict
 
 
-def filter_line(pileup_file_list):
+def filter_line(pileup_line_list):
     # filter SNP name
-    long_snp_name = pileup_file_list[6].split('\t')[2]
+    long_snp_name = pileup_line_list[6].split('\t')[2]
     short_snp_name = long_snp_name.replace(']', '')
-    current_line = {'chrom': pileup_file_list[0],
-                    'pos': pileup_file_list[1],
-                    'ref_base': pileup_file_list[2],
-                    'alleles': pileup_file_list[3].upper(),
-                    'base_qualities': pileup_file_list[4],
+    current_line = {'chrom': pileup_line_list[0],
+                    'pos': pileup_line_list[1],
+                    'ref_base': pileup_line_list[2],
+                    'alleles': pileup_line_list[3].upper(),
+                    'base_qualities': pileup_line_list[4],
                     'snp_name': short_snp_name
                     }
     return current_line
