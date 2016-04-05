@@ -73,7 +73,7 @@ def pileup_ok(pileup_line_list):
         return False
 
 
-def parse_pileup_file(pileup_file, sample):
+def parse_pileup_file(pileup_file, sample, base_min_quality):
     file_base = pileup_file.replace(".pileup", "")
     map_file = open(file_base + '.map', 'wt')
     ped_file = open(file_base + '.ped', 'wt')
@@ -100,11 +100,13 @@ def parse_pileup_file(pileup_file, sample):
 def get_arguments():
     parser = argparse.ArgumentParser(description='Manipulate GATK pileup files')
     parser.add_argument(dest='filenames', metavar='filename', nargs='*')
-    parser.add_argument('-q', metavar='Minimum base quality')
+    parser.add_argument('-q', metavar='Minimum base quality', dest='min_quality', type=int, default=30)
+    parser.add_argument('-s', metavar='sample name', default='XXX', type=str, dest='sample_name')
 
     return parser.parse_args()
 
 if __name__ == '__main__':
     my_args = get_arguments()
-    for each in my_args.filenames:
-        parse_pileup_file(each, "sample")
+    parse_pileup_file(my_args.filenames[0],
+                      my_args.sample_name,
+                      my_args.min_quality)
