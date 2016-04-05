@@ -112,19 +112,20 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
     ped_file.write('\n')
     ped_file.close()
 
-    print('Analysis finished wrote {} SNPs to output files removed {}.\nOutput PED ---> {}\nOutput MAP --->{}'
-          .format(str(ct_good), str(ct_bad), file_base + '.ped', file_base + '.map'))
+    print('Analysis finished wrote {:,} SNPs to output files removed {:,}.\nOutput PED ---> {}\nOutput MAP --->{}'
+          .format(ct_good, ct_bad, file_base + '.ped', file_base + '.map'))
+
 
 def get_arguments():
-    parser = argparse.ArgumentParser(description='Manipulate GATK pileup files')
-    parser.add_argument(dest='filenames', metavar='filename', nargs='*')
-    parser.add_argument('-q', metavar='Minimum base quality', dest='min_quality', type=int, default=30)
-    parser.add_argument('-s', metavar='sample name', default='XXX', type=str, dest='sample_name')
+    parser = argparse.ArgumentParser(description='A tool to manipulate GATK pileup files')
+    parser.add_argument(dest='filename', metavar='filename', help='Input pileup file [file.pileup].')
+    parser.add_argument('-q', metavar='Minimum Base Quality', help='Minimum base quality to filter [30].', dest='min_quality', type=int, default=30)
+    parser.add_argument('-s', metavar='Sample Name', default='XXX', type=str, dest='sample_name', help='Your sample name [XXX].')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     my_args = get_arguments()
-    parse_pileup_file(my_args.filenames[0],
+    parse_pileup_file(my_args.filename,
                       my_args.sample_name,
                       my_args.min_quality)
