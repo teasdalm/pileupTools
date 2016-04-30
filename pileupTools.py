@@ -4,7 +4,7 @@
 pileupTools
 A script to manipulate GATK bam files
 Matthew Teasdale 2016
-MIT licence
+BSD 3-Clause Licensed
 """
 
 import argparse
