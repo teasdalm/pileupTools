@@ -128,8 +128,10 @@ def get_arguments():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     my_args = get_arguments()
     parse_pileup_file(my_args.filename,
                       my_args.sample_name,
                       my_args.min_quality)
+if __name__ == '__main__':
+    main()
