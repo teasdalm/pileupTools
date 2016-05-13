@@ -47,6 +47,10 @@ def check_bases(line_dict, base_qual_cutoff):
     new_alleles = ""
     new_quals = ""
 
+    # check for bad data
+    if len(current_quals) != len(current_alleles):
+        raise SystemExit("Error: Quals and bases differ at " + line_dict['snp_name'] + " stopping.")
+
     for i in range(0, len(current_quals)):
         # filter for base quality
         base_qual = ord(current_quals[i]) - 33
@@ -90,7 +94,7 @@ def pileup_ok(pileup_line_list):
         print("NB: GATK pileup reporting reduced output stating only {} SNPs used.".format(pileup_line_list[5]))
         return False
     else:
-        raise SystemExit('Bad pileup file!')
+        raise SystemExit('Error: Malformed pileup file stopping.')
 
 
 def parse_pileup_file(pileup_file, sample, base_min_quality):
