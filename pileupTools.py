@@ -1,4 +1,5 @@
 #! /usr/bin/python
+from __future__ import print_function
 
 """
 pileupTools
@@ -29,9 +30,9 @@ def find_max_base(alleles):
     """
     allele_counts = Counter(alleles).most_common()
     max_alleles = []
-    max = allele_counts[0][1]
+    max_count = allele_counts[0][1]
     for each_allele in allele_counts:
-        if each_allele[1] == max:
+        if each_allele[1] == max_count:
             max_alleles.append(each_allele[0])
     return random.choice(max_alleles)
 
