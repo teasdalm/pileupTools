@@ -73,7 +73,7 @@ def filter_line(pileup_line_list):
     short_snp_name = info_cols[2]
     snp_a = info_cols[3]
     snp_b = info_cols[4].rstrip(']')
-    current_line = {'chrom': pileup_line_list[0].replace("chr", "").replace("OAR", ""),
+    current_line = {'chrom': pileup_line_list[0].replace("chr", "").replace("OAR", "").replace("Chr", ""),
                     'pos': pileup_line_list[1],
                     'ref_base': pileup_line_list[2],
                     'alleles': pileup_line_list[3].upper(),
