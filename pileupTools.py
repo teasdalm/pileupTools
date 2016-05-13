@@ -12,14 +12,12 @@ from collections import Counter
 import random
 
 
-def allele_check(snp_tuple,allele):
-    reverse_trans = {'A': 'T',
-                     'G': 'C',
-                     'C': 'G',
-                     'T': 'A'}
+def allele_check(snp_tuple, allele):
+    #reverse_trans = {'A': 'T',
+    #                 'G': 'C',
+     #                'C': 'G',
+      #               'T': 'A'}
     if allele == snp_tuple[0] or allele == snp_tuple[1]:
-        return True
-    elif reverse_trans[allele] == snp_tuple[0] or reverse_trans[allele] == snp_tuple[1]:
         return True
     else:
         return False
@@ -60,7 +58,7 @@ def filter_line(pileup_line_list):
     short_snp_name = info_cols[2]
     snp_a = info_cols[3]
     snp_b = info_cols[4].rstrip(']')
-    current_line = {'chrom': pileup_line_list[0],
+    current_line = {'chrom': pileup_line_list[0].replace("chr", "").replace("OAR", ""),
                     'pos': pileup_line_list[1],
                     'ref_base': pileup_line_list[2],
                     'alleles': pileup_line_list[3].upper(),
@@ -75,7 +73,7 @@ def pileup_ok(pileup_line_list):
     if len(pileup_line_list) == 7:
         return True
     elif len(pileup_line_list) == 6 and pileup_line_list[0] == '[REDUCE':
-        print("NB: GATK pileup reporting reduced output stating only {} SNPs used".format(pileup_line_list[5]))
+        print("NB: GATK pileup reporting reduced output stating only {} SNPs used.".format(pileup_line_list[5]))
         return False
     else:
         raise SystemExit('Bad pileup file!')
@@ -103,7 +101,6 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
                 line_info = check_bases(line_info, base_min_quality)
                 # check for missing data
                 if len(line_info['alleles']) != 0:
-                    ct_good += 1
                     allele_called = find_max_base(line_info['alleles'])
                     # check SNP matches ref alleles
                     if allele_check(line_info['snps'], allele_called):
@@ -113,8 +110,9 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
                                        .format(c=line_info['chrom'],
                                                s=line_info['snp_name'],
                                                p=line_info['pos']))
+                        ct_good += 1
                     else:
-                        print('{} tri-allele'.format(line_info['snp_name']))
+                        print('{} possible tri-allele removed'.format(line_info['snp_name']))
                         ct_bad += 1
                 else:
                     ct_bad += 1
@@ -123,7 +121,7 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
     ped_file.write('\n')
     ped_file.close()
 
-    print('Analysis finished wrote {:,} SNPs to output files removed {:,}.\nOutput PED ---> {}\nOutput MAP --->{}'
+    print('Analysis finished wrote {:,} SNPs to output files removed {:,}.\nOutput PED ---> {}\nOutput MAP ---> {}'
           .format(ct_good, ct_bad, file_base + '.ped', file_base + '.map'))
 
 
