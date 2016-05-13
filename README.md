@@ -1,5 +1,5 @@
 # pileupTools
-A tool to manipulate GATK pileup files
+A tool to manipulate GATK pileup files (Beta software)
 
 ##### Example usage
 
