@@ -12,17 +12,17 @@ from collections import Counter
 import random
 
 
-def tri_check(ref_base, called_base, snp_name):
+def allele_check(snp_tuple,allele):
     reverse_trans = {'A': 'T',
-                  'G': 'C',
-                  'C': 'G',
-                  'T': 'A'}
-    if ref_base != called_base and ref_base != reverse_trans[called_base]:
-        print "Possible Tri allele: {}".format(snp_name)
-
-
-def trans_only(line_dict):
-    pass
+                     'G': 'C',
+                     'C': 'G',
+                     'T': 'A'}
+    if allele == snp_tuple[0] or allele == snp_tuple[1]:
+        return True
+    elif reverse_trans[allele] == snp_tuple[0] or reverse_trans[allele] == snp_tuple[1]:
+        return True
+    else:
+        return False
 
 
 def find_max_base(alleles):
@@ -56,14 +56,17 @@ def check_bases(line_dict, base_qual_cutoff):
 
 def filter_line(pileup_line_list):
     # filter SNP name
-    long_snp_name = pileup_line_list[6].split('\t')[2]
-    short_snp_name = long_snp_name.replace(']', '')
+    info_cols = pileup_line_list[6].split('\t')
+    short_snp_name = info_cols[2]
+    snp_a = info_cols[3]
+    snp_b = info_cols[4].rstrip(']')
     current_line = {'chrom': pileup_line_list[0],
                     'pos': pileup_line_list[1],
                     'ref_base': pileup_line_list[2],
                     'alleles': pileup_line_list[3].upper(),
                     'base_qualities': pileup_line_list[4],
-                    'snp_name': short_snp_name
+                    'snp_name': short_snp_name,
+                    'snps': (snp_a, snp_b)
                     }
     return current_line
 
@@ -72,8 +75,7 @@ def pileup_ok(pileup_line_list):
     if len(pileup_line_list) == 7:
         return True
     elif len(pileup_line_list) == 6 and pileup_line_list[0] == '[REDUCE':
-        print "NB: GATK pileup reporting reduced output stating only {} SNPs used"\
-            .format(pileup_line_list[5])
+        print("NB: GATK pileup reporting reduced output stating only {} SNPs used".format(pileup_line_list[5]))
         return False
     else:
         raise SystemExit('Bad pileup file!')
@@ -94,21 +96,26 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
     with open(pileup_file) as f:
         for each_record in f:
             pileup_cols = each_record.rstrip().split(" ")
+            # check pileup line
             if pileup_ok(pileup_cols):
-                # filtering
+                # filtering snps
                 line_info = filter_line(pileup_cols)
                 line_info = check_bases(line_info, base_min_quality)
                 # check for missing data
                 if len(line_info['alleles']) != 0:
                     ct_good += 1
                     allele_called = find_max_base(line_info['alleles'])
-                    # tri_check(line_info['ref_base'], allele_called, line_info['snp_name'])
-                    # write to output files
-                    ped_file.write(' {a} {a}'.format(a=allele_called))
-                    map_file.write('{c}\t{s}\t0\t{p}\n'
-                                   .format(c=line_info['chrom'],
-                                           s=line_info['snp_name'],
-                                           p=line_info['pos']))
+                    # check SNP matches ref alleles
+                    if allele_check(line_info['snps'], allele_called):
+                        # write to output files
+                        ped_file.write(' {a} {a}'.format(a=allele_called))
+                        map_file.write('{c}\t{s}\t0\t{p}\n'
+                                       .format(c=line_info['chrom'],
+                                               s=line_info['snp_name'],
+                                               p=line_info['pos']))
+                    else:
+                        print('{} tri-allele'.format(line_info['snp_name']))
+                        ct_bad += 1
                 else:
                     ct_bad += 1
                     print('{} failed filters'.format(line_info['snp_name']))
@@ -123,8 +130,18 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
 def get_arguments():
     parser = argparse.ArgumentParser(description='A tool to manipulate GATK pileup files')
     parser.add_argument(dest='filename', metavar='filename', help='Input pileup file [file.pileup].')
-    parser.add_argument('-q', metavar='Minimum Base Quality', help='Minimum base quality to filter [30].', dest='min_quality', type=int, default=30)
-    parser.add_argument('-s', metavar='Sample Name', default='XXX', type=str, dest='sample_name', help='Your sample name [XXX].')
+    parser.add_argument('-q',
+                        metavar='Minimum Base Quality',
+                        help='Minimum base quality to filter [30].',
+                        dest='min_quality',
+                        type=int,
+                        default=30)
+    parser.add_argument('-s',
+                        metavar='Sample Name',
+                        default='XXX',
+                        type=str,
+                        dest='sample_name',
+                        help='Your sample name [XXX].')
     return parser.parse_args()
 
 
