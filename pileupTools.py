@@ -13,10 +13,9 @@ import random
 
 
 def allele_check(snp_tuple, allele):
-    #reverse_trans = {'A': 'T',
-    #                 'G': 'C',
-     #                'C': 'G',
-      #               'T': 'A'}
+    """
+    Check allele is matched one in the reference dataset
+    """
     if allele == snp_tuple[0] or allele == snp_tuple[1]:
         return True
     else:
@@ -24,6 +23,10 @@ def allele_check(snp_tuple, allele):
 
 
 def find_max_base(alleles):
+    """
+    Find consensus base at each position, ties are settled by
+    random selection.
+    """
     allele_counts = Counter(alleles).most_common()
     max_alleles = []
     max = allele_counts[0][1]
@@ -34,6 +37,10 @@ def find_max_base(alleles):
 
 
 def check_bases(line_dict, base_qual_cutoff):
+    """
+    Check that the bases called in the pileup are of ATGC and
+     that the quality is ok
+    """
     current_quals = line_dict['base_qualities']
     current_alleles = line_dict['alleles']
     new_alleles = ""
@@ -53,6 +60,9 @@ def check_bases(line_dict, base_qual_cutoff):
 
 
 def filter_line(pileup_line_list):
+    """
+    filter pileup line into a dictionary
+    """
     # filter SNP name
     info_cols = pileup_line_list[6].split('\t')
     short_snp_name = info_cols[2]
@@ -70,6 +80,9 @@ def filter_line(pileup_line_list):
 
 
 def pileup_ok(pileup_line_list):
+    """
+    check pileup is in the right format
+    """
     if len(pileup_line_list) == 7:
         return True
     elif len(pileup_line_list) == 6 and pileup_line_list[0] == '[REDUCE':
@@ -80,6 +93,10 @@ def pileup_ok(pileup_line_list):
 
 
 def parse_pileup_file(pileup_file, sample, base_min_quality):
+    """
+    parse the pileup file, where all the action happens
+    """
+
     # dealing with files
     file_base = pileup_file.replace(".pileup", "")
     map_file = open(file_base + '.map', 'wt')
@@ -126,6 +143,9 @@ def parse_pileup_file(pileup_file, sample, base_min_quality):
 
 
 def get_arguments():
+    """
+    Get command line arguments
+    """
     parser = argparse.ArgumentParser(description='A tool to manipulate GATK pileup files')
     parser.add_argument(dest='filename', metavar='filename', help='Input pileup file [file.pileup].')
     parser.add_argument('-q',
@@ -144,9 +164,14 @@ def get_arguments():
 
 
 def main():
+    """
+    simple main function
+    """
     my_args = get_arguments()
     parse_pileup_file(my_args.filename,
                       my_args.sample_name,
                       my_args.min_quality)
+
+
 if __name__ == '__main__':
     main()
