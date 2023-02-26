@@ -2,8 +2,8 @@
 A tool to manipulate GATK pileup files
 
 * Now **_legacy_** software I would recommend the following for future analyses.
- * http://www.popgen.dk/angsd/index.php/ANGSD#Overview  
- * https://github.com/stschiff/sequenceTools
+   * http://www.popgen.dk/angsd/index.php/ANGSD#Overview  
+   * https://github.com/stschiff/sequenceTools
 
 
 ##### Example usage
